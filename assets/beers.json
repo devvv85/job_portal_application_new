@@ -1,0 +1,37 @@
+[
+  {
+    "id": "d320a502-5371-4707-927f-d53ca36b972f0",
+    "name": "Barcelona beer",
+    "country": "Spain",
+    "image": "https://www.barcelonabeercompany.com/archivos/beer-barcelona-beer_140716141755.jpg",
+    "abv": "5%"
+  },
+  {
+    "id": "d320a502-5371-4707-927f-d53ca36b972f1",
+    "name": "Vitus",
+    "country": "Germany",
+    "image": "https://beerconnoisseur.com/sites/default/files/styles/beer_page_245w/public/beer/weihenstephaner-vitus.jpg?itok=4-DBApPE",
+    "abv": "7.7%"
+  },
+  {
+    "id": "d320a502-5371-4707-927f-d53ca36b972f2",
+    "name": "PINTA A Nanasy?",
+    "country": "Poland",
+    "image": "http://www.browarpinta.pl/zdjecia/piwa/thumbs/cache/pinta-a-nanasy-bottle-file-for-internet-300x0-t.jpg",
+    "abv": "7.1%"
+  },
+  {
+    "id": "d320a502-5371-4707-927f-d53ca36b972f3",
+    "name": "Peroni",
+    "country": "Italy",
+    "image": "https://products2.imgix.drizly.com/ci-peroni-53f07a33cdc3cae4.png?auto=format%2Ccompress&dpr=2&fm=jpeg&h=240&q=20",
+    "abv": "5.1%"
+  },
+  {
+    "id": "d320a502-5371-4707-927f-d53ca36b972f4",
+    "name": "HORIZONT Japán Búza beer",
+    "country": "Hungary",
+    "image": "https://res.cloudinary.com/ratebeer/image/upload/w_152,h_309,c_pad,d_beer_img_default.png,f_auto/beer_268255",
+    "abv": "5.8%"
+  }
+]
