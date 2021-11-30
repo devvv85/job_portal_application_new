@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_builder.dart';
@@ -40,8 +41,10 @@ class _State extends State<LoginPage> {
   bool _isLoggedIn = false;
   GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
+/*
   _login() async {
     try {
+      GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
       await _googleSignIn.signIn();
       setState(()
       {
@@ -51,8 +54,35 @@ class _State extends State<LoginPage> {
         apiGoogleLogin(loginnm, loginemail, token);
       });
     } catch (err) {
-   /*   loginnm="jyoti";loginemail="jyotigame92@gmail.com";
-      apiGoogleLogin(loginnm, loginemail, token);*/
+   */
+/*   loginnm="jyoti";loginemail="jyotigame92@gmail.com";
+      apiGoogleLogin(loginnm, loginemail, token);*//*
+
+      print("errorrrr>>$err");
+    }
+  }
+*/
+
+  _login() async {
+    try
+    {
+      GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+      await _googleSignIn.signIn();
+      setState(() async
+      {
+        _isLoggedIn = true;
+        loginnm = _googleSignIn.currentUser.displayName;
+        loginemail = _googleSignIn.currentUser.email;
+      //  photourl = _googleSignIn.currentUser.photoUrl;
+        prefs = await SharedPreferences.getInstance();
+        setState(()
+        {
+          token = prefs.getString('devicetoken');
+          print('token1 $token');
+        });
+        apiGoogleLogin(loginnm, loginemail, token);
+      });
+    } catch (err) {
       print("errorrrr>>$err");
     }
   }
@@ -75,7 +105,15 @@ class _State extends State<LoginPage> {
   @override
   Widget build(BuildContext context)
   {
-    return Scaffold(
+    return new WillPopScope(
+        onWillPop: ()
+    {
+      Navigator.pop(context);
+    exit(0);
+      return Future.value(true);
+    },
+
+        child:  Scaffold(
         appBar: AppBar(
           title: Text('Login'),
           backgroundColor: MyColor.colorprimary,
@@ -279,7 +317,7 @@ class _State extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                 ))
               ],
-            )));
+            ))));
   }
 
   initializeSF() async {
@@ -305,7 +343,8 @@ class _State extends State<LoginPage> {
     prefs.setBool('SFIsLogin', true);
   }
 
-  getStringFromSF() async {
+  getStringFromSF() async
+  {
     prefs = await SharedPreferences.getInstance();
 
     //  nameController.text ="a";
@@ -325,13 +364,15 @@ class _State extends State<LoginPage> {
   }
 
   //api call
-  apiLogin(String email, String pass, String token) async {
+  apiLogin(String email, String pass, String token) async
+  {
     Map data = {"email": email, "ps": pass, "token": token};
     print(data);
     var jsonData = null;
     var response = await http.post(uidata.login, body: data);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200)
+    {
       jsonData = json.decode(response.body);
       var status = jsonData['status'];
       var msg = jsonData['message'];
@@ -351,8 +392,7 @@ class _State extends State<LoginPage> {
           Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardActivity("", "", uId, "")),);
         });
       } else {
-        Toast.show(msg, context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        Toast.show(msg, context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       }
     } else {}
   }
@@ -369,30 +409,49 @@ class _State extends State<LoginPage> {
       jsonData = json.decode(response.body);
       var status = jsonData['status'];
       var msg = jsonData['message'];
+      var isnew = jsonData['isnew'].toString();
 
-      print(jsonData);
+      print("Res>>$jsonData");
       if (status == "1")
       {
         addIsLoginTrueToSF();
 
         Toast.show(msg, context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
 
-        var uId = jsonData['id'];
+        var uId = jsonData['id'].toString();
         var uName = nm;
 
         prefs = await SharedPreferences.getInstance();
         prefs.setString('uId', uId);
         prefs.setString('uName', uName);
-        setState(()
-        {
-         // Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardActivity("", "", uId, "")),);
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ExperienceSociallogin(uId.toString())),);
-        });
+
+       if(isnew=="true")
+       {
+         setState(() {
+
+        //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ExperienceSociallogin(uId.toString())),);
+
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ExperienceActivity()),);
+
+         });
+       }
+        else
+          {
+            setState(()
+            {
+              prefs.setString('uId', uId);
+              prefs.setString('uName', uName);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardActivity("", "", uId, "")),);
+            });
+          }
       }
       else
         {
           Toast.show(msg, context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         }
-    } else {}
+    } else
+      {
+         print("elseee");
+      }
   }
 }

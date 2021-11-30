@@ -31,6 +31,7 @@ var _message;
 FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     new FlutterLocalNotificationsPlugin();
+GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
 
 class DashboardActivity extends StatefulWidget {
   @override
@@ -42,7 +43,7 @@ class DashboardActivity extends StatefulWidget {
     strLoc = location;
     userId = uid;
     strtechnology = technology;
-    print('DashBoard>>> $userId');
+    print('DashBoard>>> $userId $strtechnology');
   }
 }
 
@@ -128,8 +129,25 @@ class _MyHomePageState extends State<DashboardActivity> {
       print("Settings registered: $settings");
     });
   }
-
   //**************************************************************************************************
+
+  void logout()
+  {
+    setState(() {
+      GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+      googleSignIn.signOut();
+      googleSignIn.isSignedIn().then((s)
+      {
+        googleSignIn.signOut();
+        //  Toast.show("signout", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        Navigator.pop(context);
+         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()),);
+      //  exit(0);
+      });
+    });
+
+  }
+
   @override
   Future<bool> _onWillPop() async {
     return (await showDialog(
@@ -145,15 +163,25 @@ class _MyHomePageState extends State<DashboardActivity> {
               new FlatButton(
                 onPressed: () {
                   /*Navigator.of(context).pop(true),*/
+                 /* setState(()
+                  {
+                    GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+                    googleSignIn.signOut();
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()),);
+                  });*/
 
                   setState(() {
                     GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
-                    googleSignIn.isSignedIn().then((s) {
+                    googleSignIn.signOut();
+                    googleSignIn.isSignedIn().then((s)
+                    {
                       googleSignIn.signOut();
                       //  Toast.show("signout", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                     // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()),);
+                      exit(0);
                     });
                   });
-                  exit(0);
+                /*  exit(0);*/
                 },
                 child: new Text('Yes'),
               ),
@@ -444,6 +472,23 @@ class _MyHomePageState extends State<DashboardActivity> {
                         ),
                         /*  trailing: Icon(Icons.person),
                 onTap: () => {},*/
+                      ),
+                      ListTile(
+                        contentPadding:
+                        EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+                        dense: true,
+                        leading:  Icon(
+                          Icons.logout,
+                          color: MyColor.white,
+                        ),
+                        onTap: () {
+                         logout();
+                        },
+                        title: Text(
+                          'Logout',
+                           style: TextStyle(fontSize: 16,color: MyColor.white),
+                        //  style: TextStyle(fontSize: 14),
+                        ),
                       ),
                       Divider(),
                     ],

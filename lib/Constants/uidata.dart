@@ -1,7 +1,7 @@
 class uidata {
   //base
-  static final _baseURL = 'http://jobcurator.in/Api/Seeker/';
-  static final _baseURL1 = 'http://jobcurator.in/Api/';
+  static final _baseURL = 'https://jobcurator.in/Api/Seeker/';
+  static final _baseURL1 = 'https://jobcurator.in/Api/';
 
   //sub url
   static final signup = _baseURL+'signUp';

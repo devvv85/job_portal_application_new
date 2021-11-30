@@ -1,12 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:job_portal_application/Constants/uidata.dart';
+import 'package:launch_review/launch_review.dart';
 import 'package:loadmore/loadmore_widget.dart';
+import 'package:package_info/package_info.dart';
 
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,16 +41,19 @@ String is_favourite = "";
 String is_favourite_2 = "";
 String likecount = "0";
 String technology = "";
-
+double newVersion;
+String PLAY_STORE_APP_ID="https://play.google.com/store/apps/details?id=job.curator.jobcurator";
 class PostedJob extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 
-  PostedJob(String sortby, String location, String tech, var tot_Pages1) {
+  PostedJob(String sortby, String location, String tech, var tot_Pages1)
+  {
     strSrotby = sortby;
     strLoc = location;
     strtech = tech;
     tot_Pages = tot_Pages1;
     print("sortbyyy>>>$strSrotby");
+    print("strtechskill>>>$strtech");
   }
 }
 
@@ -73,6 +80,7 @@ class _MyHomePageState extends State<PostedJob> {
     prefs = await SharedPreferences.getInstance();
     userId = prefs.getString("uId");
     print('Posted job $userId');
+
     setState(() {
       isLoading = true;
       load();
@@ -113,7 +121,6 @@ class _MyHomePageState extends State<PostedJob> {
   }
 
   Future<Album> _getUusers(String cnt, String tech) async {
-
     Map data = {
       "sort": strSrotby,
       "loc_id": strLoc,
@@ -131,17 +138,16 @@ class _MyHomePageState extends State<PostedJob> {
       setState(() {
         print("json>>>$jsonData");
         status = jsonData['status'];
-        print("status_postedjobget>>$status");
+        print("status_postedjobget>>$status$newVersion");
         if (status == "1")
         {
           setState(()
           {
+            newVersion = double.parse(jsonData['version']);
             tot_Pages = jsonData['total_pages'];
 
-           // Toast.show("Api call"+cnt+"tot>>"+tot_Pages.toString(), context, duration: Toast.LENGTH_LONG, gravity: Toast.CENTER);
-           /* Toast.show("tot>>"+tot_Pages.toString(), context, duration: Toast.LENGTH_LONG, gravity: Toast.CENTER);
-            Toast.show("Api call"+cnt+"tot>>"+tot_Pages.toString(), context, duration: Toast.LENGTH_LONG, gravity: Toast.CENTER);*/
             print("Response3>>>>>>$res totpages$tot_Pages");
+            versionCheck(context);
           });
 
           setState(() {
@@ -152,8 +158,7 @@ class _MyHomePageState extends State<PostedJob> {
           });
         } else {
           isLoading = false;
-          Toast.show("No Data!!", context, duration: Toast.LENGTH_LONG,
-              gravity: Toast.CENTER);
+          Toast.show("No Data!!", context, duration: Toast.LENGTH_LONG, gravity: Toast.CENTER);
         }
       });
 
@@ -295,6 +300,99 @@ class _MyHomePageState extends State<PostedJob> {
     }
   }
 
+
+
+
+  //******************************Forcefully update************************************************************************************
+  //Show Dialog to force user to update
+
+
+
+
+
+  _showVersionDialog(context) async {
+    await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        String title = "New Update Available";
+        String message =
+            "There is a newer version of app available please update it now.";
+        String btnLabel = "Update Now";
+        String btnLabelCancel = "Later";
+        return Platform.isIOS
+            ? new CupertinoAlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(btnLabel),
+              onPressed: () => LaunchReview.launch(
+                androidAppId: PLAY_STORE_APP_ID,
+              ),
+            ),
+            FlatButton(
+              child: Text(btnLabelCancel),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        )
+            : new AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(btnLabel),
+              onPressed: () => _launchURL(PLAY_STORE_APP_ID,),
+              /* onPressed: () => LaunchReview.launch(
+                androidAppId: PLAY_STORE_APP_ID,
+              ),*/
+            ),
+            FlatButton(
+              child: Text(btnLabelCancel),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  _launchURL(String url) async
+  {
+    if (await canLaunch(url))
+    {
+      await launch(url);
+    }
+    else {
+      throw 'Could not launch $url';
+    }
+  }
+
+
+
+  versionCheck(context) async {
+
+
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    double currentVersion = double.parse(info.version.trim().replaceAll(".", ""));
+    print("version>>>$currentVersion"+"newVersion>>$newVersion");
+    if (newVersion > currentVersion)
+    {
+
+      _showVersionDialog(context);
+    }
+
+
+
+
+
+
+
+  }
+
+
+
+//******************************************************************************************************
   @override
   Widget build(BuildContext context) {
     return new Scaffold(

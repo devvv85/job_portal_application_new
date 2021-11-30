@@ -242,15 +242,13 @@ class _State extends State<experiencesocialogin> {
       if (status == "1") {
         Toast.show(msg, context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        setState(() {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => DashboardActivity("","",id,"")),
-          );
+        setState(()
+        {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardActivity("","",id,"")),);
         });
-      } else {
-        Toast.show(msg, context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      } else
+        {
+        Toast.show(msg, context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       }
     } else {}
   }
